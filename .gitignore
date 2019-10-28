@@ -1,6 +1,8 @@
 # Specific for the lecture
 *.ipynb
 
+.vagrant/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
