@@ -51,7 +51,7 @@ var html = `<!DOCTYPE HTML>
 `
 
 func queryDB() []Person {
-	session, err := mgo.Dial("192.168.20.3:27017")
+	session, err := mgo.Dial("192.168.20.3:12345")
 	if err != nil {
 		panic(err)
 	}
