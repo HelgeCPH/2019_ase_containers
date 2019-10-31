@@ -1,0 +1,55 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "bento/ubuntu-18.04"
+
+  # Create a private network, which allows host-only access to the machine
+  # using a specific IP.
+  # # config.vm.network "private_network", ip: "192.168.33.10"
+  # config.vm.network "forwarded_port", guest: 8080, host: 8080
+  # # for neo4j DB server
+  # config.vm.network "forwarded_port", guest: 7474, host: 7474
+  # config.vm.network "forwarded_port", guest: 7687, host: 7687
+  # # for mongoDB server
+  # config.vm.network "forwarded_port", guest: 27017, host: 27017
+  # # config.vm.network "forwarded_port", guest: 27018, host: 27018
+  # # config.vm.network "forwarded_port", guest: 27019, host: 27019
+  # config.vm.network "forwarded_port", guest: 28017, host: 28017
+  # # for MySQL DB server
+  # config.vm.network "forwarded_port", guest: 3306, host: 3306
+
+  # # For Python serving examples
+  # config.vm.network "forwarded_port", guest: 8001, host: 8001
+  config.vm.synced_folder "../", "/host"  # , type: "nfs"
+  #
+  config.vm.provider "virtualbox" do |vb|
+    # Display the VirtualBox GUI when booting the machine
+    # vb.gui = true
+
+    # Customize the amount of memory on the VM:
+    vb.memory = "4096"
+    vb.cpus = "2"
+    vb.name = "docker_vm"
+  end
+
+  config.vm.provision "shell", privileged: false, inline: <<-SHELL
+    sudo apt-get update
+
+    sudo echo "LC_ALL=\"en_US.UTF-8\"" >> /etc/environment
+    sudo locale-gen UTF-8
+
+    sudo apt install apt-transport-https ca-certificates curl software-properties-common
+
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+    sudo apt-get update
+    sudo apt-cache policy docker-ce
+    sudo apt-get install -y docker-ce
+
+    # from https://docs.docker.com/install/linux/linux-postinstall/#manage-docker-as-a-non-root-user
+    sudo groupadd docker
+    sudo usermod -aG docker $USER
+    sudo systemctl enable docker
+  SHELL
+end
